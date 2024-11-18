@@ -3,7 +3,7 @@ spring:
         url: jdbc:postgresql://localhost:5432/postgres
         username: postgres
         password: postgres
-        drive-class-name: org.postgresql.Driver
+        driver-class-name: org.postgresql.Driver
     jpa:
         database-platform: org.hibernate.dialect.PostgreSQLDialect
         hibernate:
@@ -19,13 +19,13 @@ spring:
                     path:
                         pattern: /api/**
                         authenticated: true
-         csrf:
-             disabled: true 
-         cors:
-             configurationSource:
-                 allowedOrigins: http://localhost:3000
-                 allowedMethods: *
-                 allowedHeaders: *
-                 allowCredentials: true
-                 exposedHeaders: Authorization
-                 maxAge:3600
+            csrf:
+                disabled: true 
+            cors:
+                configurationSource:
+                     allowedOrigins: http://localhost:3000
+                     allowedMethods: "*"
+                     allowedHeaders: "*"
+                     allowCredentials: true
+                     exposedHeaders: Authorization
+                     maxAge: 3600
