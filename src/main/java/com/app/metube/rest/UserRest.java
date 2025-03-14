@@ -1,4 +1,4 @@
-package com.metube.rest;
+package com.app.metube.rest;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,38 +14,47 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.metube.entity.User;
-import com.metube.service.UserService;
+import com.app.metube.entity.User;
 
 @RestController
 @RequestMapping("/api/user")
 public class UserRest {
-	private UserService userService;
+//	private UserService userService;
 
-	@Autowired
-	public UserRest(UserService userService) {
-		this.userService = userService;
-	}
+//	@Autowired
+//	public UserRest(UserService userService) {
+//		this.userService = userService;
+//	}
 
 	@GetMapping("/users")
 	public List<User> getUsers() {
-		return userService.getUsers();
+//		return userService.getUsers();
+		return null;
+	}
+	
+	@GetMapping("/myAccount")
+	public String getAccountDetails() {
+//		return userService.getUsers();
+		return null;
 	}
 
 	@GetMapping("/users/{id}")
 	public User getUser(@PathVariable("Id") UUID id) {
-		return userService.getUser(id);
+//		return userService.getUser(id);
+		return null;
 	}
 
 	@PutMapping("/users/{id}")
 	public User updateUser(@RequestBody User user, @PathVariable("Id") UUID id) {
-		return userService.updateUser(user, id);
+//		return userService.updateUser(user, id);
+		return null;
 	}
 
 	@PostMapping("/register")
 	public ResponseEntity<User> updateUser(@RequestBody User user) {
-		User newUser = userService.addUser(user);
-		return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+//		User newUser = userService.addUser(user);
+//		return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+		return null;
 	}
 
 }

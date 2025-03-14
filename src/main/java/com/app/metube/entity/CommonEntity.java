@@ -1,4 +1,4 @@
-package com.metube.entity;
+package com.app.metube.entity;
 
 import java.io.Serializable;
 import java.util.Date;

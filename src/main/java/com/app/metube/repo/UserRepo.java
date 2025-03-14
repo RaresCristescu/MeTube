@@ -1,4 +1,4 @@
-package com.metube.repo;
+package com.app.metube.repo;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.metube.entity.User;
+import com.app.metube.entity.User;
 
 @Repository
 public interface UserRepo extends JpaRepository<User,UUID>{
