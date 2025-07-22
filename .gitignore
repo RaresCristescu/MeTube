@@ -46,3 +46,8 @@ build/
 /frontend/node_modules/
 /frontend/build/
 /frontend/.env
+
+#Custom files not to include
+/frontend/me-tube/package-lock.json
+/.sdkmanrc
+
