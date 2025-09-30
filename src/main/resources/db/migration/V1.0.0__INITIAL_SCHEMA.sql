@@ -8,10 +8,11 @@ BEGIN
 		id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 		login CHARACTER VARYING(100) NOT NULL,
 		email CHARACTER VARYING(100) NOT NULL,
+		password character varying(300) NOT NULL,
+		role character varying(60) NOT NULL,
 		creation TIMESTAMP WITH TIME ZONE NOT NULL,
 		modified TIMESTAMP WITH TIME ZONE,
 		expires TIMESTAMP WITH TIME ZONE,
-		password character varying(60) NOT NULL,
 		CONSTRAINT user_login_unique UNIQUE (login),
 		CONSTRAINT user_email_unique UNIQUE (email)--,
 		--CONSTRAINT password_length_check CHECK (char_length(password::text) = 60)
@@ -36,8 +37,8 @@ BEGIN
 	);
 	
 	admin_user_id := gen_random_uuid();
-	INSERT INTO users (id, login, email, creation, password)
-	VALUES(admin_user_id, 'admin', 'admin@metube.com', NOW(), 'admin');
+	INSERT INTO users (id, login, email, creation, password, role)
+	VALUES(admin_user_id, 'admin', 'admin@metube.com', NOW(), '{bcrypt}$2a$12$X4flUx.23h1/GDdk1BvsqONeX3p0QatdMASCz0AB1gSzkOl50zD4G', 'ROLE_ADMIN');--, 'admin'
 	
 	role_admin_id := 1;
 	INSERT INTO roles (id, name, description)

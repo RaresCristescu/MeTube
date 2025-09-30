@@ -24,16 +24,23 @@ public class User extends CommonEntity implements UserDetails {
 
 	@Column(unique = true)
 	private String login;
+	
+	private String email;
 
 	private String password;
 
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
-	public User(UUID id, Date creation, Date expires, Date modified, String login, String password) {
+	
+
+	public User(UUID id, Date creation, Date expires, Date modified, String login, String email, String password,
+			Role role) {
 		super(id, creation, expires, modified);
 		this.login = login;
+		this.email = email;
 		this.password = password;
+		this.role = role;
 	}
 
 	public User() {
@@ -46,6 +53,14 @@ public class User extends CommonEntity implements UserDetails {
 
 	public void setLogin(String login) {
 		this.login = login;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getPassword() {
@@ -66,13 +81,14 @@ public class User extends CommonEntity implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return role.getAuthorities();
+//		return role.getAuthorities();
+		return List.of(new SimpleGrantedAuthority(role.name()));
 	}
 
 	@Override
 	public String getUsername() {
-		// TODO Auto-generated method stub
-		return null;
+		return login;
 	}
-
+	
+	
 }
