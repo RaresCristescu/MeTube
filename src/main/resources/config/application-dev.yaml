@@ -1,8 +1,4 @@
 spring:
-    profiles:
-        active: prod
-    config:
-        import: application_prod.yaml
     datasource:
         url: jdbc:postgresql://localhost:5432/postgres
         username: postgres
