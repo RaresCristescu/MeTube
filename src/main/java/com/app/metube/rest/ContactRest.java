@@ -26,9 +26,9 @@ public class ContactRest {
 //	}
 
 	@GetMapping("/contact")
-	public List<User> getUsers() {
+	public String  getUsers() {
 //		return userService.getUsers();
-		return null;
+		return "INTRA AICI CA SA BLA BLA";
 	}
 
 }

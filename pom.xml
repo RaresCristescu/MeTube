@@ -9,6 +9,7 @@
 		<version>3.3.5-SNAPSHOT</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
+	
 	<groupId>com.app</groupId>
 	<artifactId>metube</artifactId>
 	<version>0.0.1-SNAPSHOT</version>

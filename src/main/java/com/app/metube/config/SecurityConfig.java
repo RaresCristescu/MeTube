@@ -41,14 +41,19 @@ public class SecurityConfig {
 
 	@Bean
 	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-//		http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
-//		http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());
-//		http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
-		http.authorizeHttpRequests((requests) -> requests.requestMatchers("/api/**").authenticated()
-				.requestMatchers("/contact", "/error", "/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
-						"/swagger-resources/**", "/configuration/ui", "/configuration/security", "/swagger-ui/**",
-						"/webjars/**", "/swagger-ui.html", "/ws/**")
-				.permitAll());
+		//daca nu adaugi requiresChannel atunci o sa accepte si http si https
+//		http.requiresChannel(rcc-> rcc.anyRequest().requiresSecure());//obliga https
+		http.requiresChannel(rcc-> rcc.anyRequest().requiresInsecure());//obliga http
+		
+		http.csrf(csrfConfig->csrfConfig.disable());
+		http.authorizeHttpRequests((requests) -> 
+			requests
+			.requestMatchers( "/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
+					"/swagger-resources/**", "/configuration/ui", "/configuration/security", "/swagger-ui/**",
+					"/webjars/**", "/swagger-ui.html", "/ws/**").permitAll()
+			.requestMatchers("/contact", "/error", "/api/user/register").permitAll()
+			.requestMatchers("/api/**").authenticated()
+				);
 //		http.formLogin(flc -> {
 //			flc.disable();//daca sunt ambele disbled imi pica
 //		});

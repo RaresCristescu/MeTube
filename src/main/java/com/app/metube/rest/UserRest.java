@@ -14,17 +14,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.metube.dto.UserDto;
 import com.app.metube.entity.User;
+import com.app.metube.service.UserService;
 
 @RestController
 @RequestMapping("/api/user")
 public class UserRest {
-//	private UserService userService;
+	private UserService userService;
 
-//	@Autowired
-//	public UserRest(UserService userService) {
-//		this.userService = userService;
-//	}
+	public UserRest(UserService userService) {
+		super();
+		this.userService = userService;
+	}
 
 	@GetMapping("/users")
 	public List<User> getUsers() {
@@ -51,10 +53,13 @@ public class UserRest {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<User> updateUser(@RequestBody User user) {
-//		User newUser = userService.addUser(user);
-//		return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
-		return null;
+	public ResponseEntity<String> registerUser(@RequestBody UserDto userDto) {
+		try {
+			return userService.registerUser(userDto);
+		}catch(Exception e) {
+//			throw e;
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
 	}
 
 }

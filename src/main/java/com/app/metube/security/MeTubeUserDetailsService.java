@@ -15,11 +15,11 @@ import com.app.metube.entity.User;
 import com.app.metube.repo.UserRepo;
 
 @Service
-public class MyUserDetailsService implements UserDetailsService {
+public class MeTubeUserDetailsService implements UserDetailsService {
 
 	private final UserRepo userRepo;
 
-	public MyUserDetailsService(UserRepo userRepo) {
+	public MeTubeUserDetailsService(UserRepo userRepo) {
 		this.userRepo = userRepo;
 	}
 
