@@ -37,8 +37,8 @@ BEGIN
 	--);
 	
 	admin_user_id := gen_random_uuid();
-	INSERT INTO users (id, login, email, creation, password, role)
-	VALUES(admin_user_id, 'admin', 'admin@metube.com', NOW(), '{bcrypt}$2a$12$X4flUx.23h1/GDdk1BvsqONeX3p0QatdMASCz0AB1gSzkOl50zD4G', 'ROLE_ADMIN');--, 'admin'
+	INSERT INTO users (id, login, email, creation, password, role)--user: admin, pass: admin
+	VALUES(admin_user_id, 'admin', 'admin@metube.com', NOW(), '{bcrypt}$2a$12$X4flUx.23h1/GDdk1BvsqONeX3p0QatdMASCz0AB1gSzkOl50zD4G', 'ROLE_ADMIN');
 	
 	--role_admin_id := 1;
 	--INSERT INTO roles (id, name, description)
