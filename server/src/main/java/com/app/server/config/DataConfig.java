@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @Configuration
 @EntityScan("com.app.data.entity") // TODO look for better options
 @EnableJpaRepositories("com.app.data.repo") // TODO look for better options
-public class DataConfiguration {
+public class DataConfig {
 
 }
