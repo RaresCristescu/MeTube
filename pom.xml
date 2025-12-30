@@ -26,7 +26,6 @@
 	  <maven.compiler.source>21</maven.compiler.source>
 	  <maven.compiler.target>21</maven.compiler.target>
 	  <version.lombok>1.18.42</version.lombok>
-    <spring-boot.version>3.3.5</spring-boot.version><!-- maybe remove-->
   </properties>
   
   <dependencyManagement>

@@ -13,11 +13,14 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "users")
-@AllArgsConstructor
 public class User extends CommonEntity{
 	private static final long serialVersionUID = -1353883722173763047L;
 
@@ -40,10 +43,6 @@ public class User extends CommonEntity{
 		this.email = email;
 		this.password = password;
 		this.role = role;
-	}
-
-	public User() {
-		super();
 	}
 
 	public String getLogin() {

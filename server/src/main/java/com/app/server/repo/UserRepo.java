@@ -4,13 +4,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import com.app.server.entity.MyUserDetails;
+import com.app.data.entity.User;
 
 @Repository
-public interface UserRepo extends JpaRepository<MyUserDetails,UUID>{
-	
-	Optional<MyUserDetails> findByLogin(String login);
-
+public interface UserRepo extends JpaRepository<User,UUID>, JpaSpecificationExecutor<User>{
+	Optional<User> findByLogin(String login);
 }

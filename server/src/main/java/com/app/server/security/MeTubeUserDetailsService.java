@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.app.data.entity.User;
 import com.app.server.entity.MyUserDetails;
 import com.app.server.repo.UserRepo;
 
@@ -25,12 +26,12 @@ public class MeTubeUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		MyUserDetails user = userRepo.findByLogin(username)
+		User user = userRepo.findByLogin(username)
 				.orElseThrow(() -> new UsernameNotFoundException("User details not found for the user: " + username));
 
 		List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole().name()));
 		
-		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
+		return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(),
 				authorities);
 	}
 
