@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.data.dto.UserDto;
-import com.app.server.entity.MyUserDetails;
+import com.app.data.entity.User;
 import com.app.server.service.UserService;
 
 @RestController
@@ -29,7 +29,7 @@ public class UserRest {
 	}
 
 	@GetMapping("/users")
-	public List<MyUserDetails> getUsers() {
+	public List<User> getUsers() {
 //		return userService.getUsers();
 		return null;
 	}
@@ -40,13 +40,13 @@ public class UserRest {
 	}
 
 	@GetMapping("/users/{id}")
-	public MyUserDetails getUser(@PathVariable("Id") UUID id) {
+	public User getUser(@PathVariable("Id") UUID id) {
 //		return userService.getUser(id);
 		return null;
 	}
 
 	@PutMapping("/users/{id}")
-	public MyUserDetails updateUser(@RequestBody MyUserDetails user, @PathVariable("Id") UUID id) {
+	public User updateUser(@RequestBody User user, @PathVariable("Id") UUID id) {
 //		return userService.updateUser(user, id);
 		return null;
 	}

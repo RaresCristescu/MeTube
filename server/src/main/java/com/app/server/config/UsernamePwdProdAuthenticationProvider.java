@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.app.server.security.MeTubeUserDetailsService;
 
+
 @Component
 @Profile("prod")
 public class UsernamePwdProdAuthenticationProvider implements AuthenticationProvider{

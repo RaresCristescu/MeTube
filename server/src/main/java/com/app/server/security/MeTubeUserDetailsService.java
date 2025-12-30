@@ -12,8 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.app.data.entity.User;
-import com.app.server.entity.MyUserDetails;
-import com.app.server.repo.UserRepo;
+import com.app.data.repo.UserRepo;
 
 @Service
 public class MeTubeUserDetailsService implements UserDetailsService {

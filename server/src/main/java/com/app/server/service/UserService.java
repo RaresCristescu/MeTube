@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.app.data.dto.UserDto;
-import com.app.server.entity.MyUserDetails;
+import com.app.data.entity.User;
 import com.app.data.enums.Role;
-import com.app.server.repo.UserRepo;
+import com.app.data.repo.UserRepo;
 
 @Service
 public class UserService {
@@ -33,13 +33,13 @@ public class UserService {
 		try {
 			String hashPwd = passwordEncoder.encode(user.getPassword());
 			
-			final MyUserDetails newUser = new MyUserDetails();
+			final User newUser = new User();
 			newUser.setLogin(user.getLogin());
 			newUser.setEmail(user.getEmail());
 			newUser.setPassword(hashPwd);
 			newUser.setRole(Role.ROLE_ADMIN);
 			
-			MyUserDetails savedUser = repo.save(newUser);
+			User savedUser = repo.save(newUser);
 			
 			if(savedUser.getId()!=null) {
 				return ResponseEntity.status(HttpStatus.CREATED).body("Given user detail arte succesfully registered");

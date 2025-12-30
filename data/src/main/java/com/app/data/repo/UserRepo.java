@@ -1,4 +1,4 @@
-package com.app.server.repo;
+package com.app.data.repo;
 
 import java.util.Optional;
 import java.util.UUID;
