@@ -21,20 +21,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class User extends CommonEntity{
+public class User extends CommonEntity {
 	private static final long serialVersionUID = -1353883722173763047L;
 
 	@Column(unique = true)
 	private String login;
-	
+
 	private String email;
 
 	private String password;
 
 	@Enumerated(EnumType.STRING)
 	private Role role;
-
-	
 
 	public User(UUID id, Date creation, Date expires, Date modified, String login, String email, String password,
 			Role role) {
@@ -76,6 +74,5 @@ public class User extends CommonEntity{
 	public void setRole(Role role) {
 		this.role = role;
 	}
-	
-	
+
 }

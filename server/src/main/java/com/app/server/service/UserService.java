@@ -16,39 +16,37 @@ public class UserService {
 
 	private final UserRepo repo;
 	private final PasswordEncoder passwordEncoder;
-	
+
 	public UserService(UserRepo repo, PasswordEncoder passwordEncoder) {
 		super();
 		this.repo = repo;
 		this.passwordEncoder = passwordEncoder;
 	}
-	
-	
-	public ResponseEntity<String> getAccountDetails(){
+
+	public ResponseEntity<String> getAccountDetails() {
 		return null;
 	}
-	
-	
+
 	public ResponseEntity<String> registerUser(@RequestBody UserDto user) {
 		try {
 			String hashPwd = passwordEncoder.encode(user.getPassword());
-			
+
 			final User newUser = new User();
 			newUser.setLogin(user.getLogin());
 			newUser.setEmail(user.getEmail());
 			newUser.setPassword(hashPwd);
 			newUser.setRole(Role.ROLE_ADMIN);
-			
+
 			User savedUser = repo.save(newUser);
-			
-			if(savedUser.getId()!=null) {
+
+			if (savedUser.getId() != null) {
 				return ResponseEntity.status(HttpStatus.CREATED).body("Given user detail arte succesfully registered");
 			} else {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration failed");
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}
-	
+
 }

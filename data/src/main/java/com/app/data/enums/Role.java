@@ -5,11 +5,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 public enum Role {
-	ROLE_ADMIN,
-	ROLE_USER
-	
+	ROLE_ADMIN, ROLE_USER
+
 //	USER(Collections.emptySet()),
 //	ADMIN(Set.of(Permission.ADMIN_READ, Permission.ADMIN_CREATE, Permission.ADMIN_UPDATE, Permission.ADMIN_DELETE,
 //			Permission.MANAGER_READ, Permission.MANAGER_CREATE, Permission.MANAGER_UPDATE, Permission.MANAGER_DELETE)),

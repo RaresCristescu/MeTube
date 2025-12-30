@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

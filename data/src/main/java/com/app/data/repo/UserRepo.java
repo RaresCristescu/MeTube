@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 import com.app.data.entity.User;
 
 @Repository
-public interface UserRepo extends JpaRepository<User,UUID>, JpaSpecificationExecutor<User>{
+public interface UserRepo extends JpaRepository<User, UUID>, JpaSpecificationExecutor<User> {
 	Optional<User> findByLogin(String login);
 }

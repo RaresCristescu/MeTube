@@ -33,7 +33,7 @@ public class UserRest {
 //		return userService.getUsers();
 		return null;
 	}
-	
+
 	@GetMapping("/myAccount")
 	public ResponseEntity<String> getAccountDetails() {
 		return userService.getAccountDetails();
@@ -55,7 +55,7 @@ public class UserRest {
 	public ResponseEntity<String> registerUser(@RequestBody UserDto userDto) {
 		try {
 			return userService.registerUser(userDto);
-		}catch(Exception e) {
+		} catch (Exception e) {
 //			throw e;
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}

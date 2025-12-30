@@ -12,14 +12,13 @@ import org.springframework.stereotype.Component;
 
 import com.app.server.security.MeTubeUserDetailsService;
 
-
 @Component
 @Profile("prod")
-public class UsernamePwdProdAuthenticationProvider implements AuthenticationProvider{
+public class UsernamePwdProdAuthenticationProvider implements AuthenticationProvider {
 
 	private final MeTubeUserDetailsService meTubeUserDetailsService;
 	private final PasswordEncoder passwordEncoder;
-	
+
 	public UsernamePwdProdAuthenticationProvider(final MeTubeUserDetailsService meTubeUserDetailsService,
 			final PasswordEncoder passwordEncoder) {
 		super();
@@ -32,9 +31,8 @@ public class UsernamePwdProdAuthenticationProvider implements AuthenticationProv
 		String username = authentication.getName();
 		String password = authentication.getCredentials().toString();
 		UserDetails userDetails = meTubeUserDetailsService.loadUserByUsername(username);
-		return new UsernamePasswordAuthenticationToken(username,password, userDetails.getAuthorities());
-		
-		
+		return new UsernamePasswordAuthenticationToken(username, password, userDetails.getAuthorities());
+
 	}
 
 	@Override

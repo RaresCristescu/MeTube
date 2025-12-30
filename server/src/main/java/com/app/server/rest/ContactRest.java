@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 public class ContactRest {
 //	private UserService userService;
@@ -25,7 +24,7 @@ public class ContactRest {
 //	}
 
 	@GetMapping("/contact")
-	public String  getUsers() {
+	public String getUsers() {
 //		return userService.getUsers();
 		return "INTRA AICI CA SA BLA BLA";
 	}

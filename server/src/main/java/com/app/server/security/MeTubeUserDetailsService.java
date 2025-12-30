@@ -29,9 +29,8 @@ public class MeTubeUserDetailsService implements UserDetailsService {
 				.orElseThrow(() -> new UsernameNotFoundException("User details not found for the user: " + username));
 
 		List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole().name()));
-		
-		return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(),
-				authorities);
+
+		return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(), authorities);
 	}
 
 }
