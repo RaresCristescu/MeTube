@@ -1,22 +1,22 @@
 package com.app.data.entity;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.app.data.enums.Role;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -24,55 +24,16 @@ import lombok.NoArgsConstructor;
 public class User extends CommonEntity {
 	private static final long serialVersionUID = -1353883722173763047L;
 
-	@Column(unique = true)
+	@Column(name = "login", unique = true)
 	private String login;
 
+	@Column(name = "email", unique = true)
 	private String email;
 
+	@Column(name = "password")
 	private String password;
 
-	@Enumerated(EnumType.STRING)
-	private Role role;
-
-	public User(UUID id, Date creation, Date expires, Date modified, String login, String email, String password,
-			Role role) {
-		super(id, creation, expires, modified);
-		this.login = login;
-		this.email = email;
-		this.password = password;
-		this.role = role;
-	}
-
-	public String getLogin() {
-		return login;
-	}
-
-	public void setLogin(String login) {
-		this.login = login;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
-	}
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
+	private Set<UserRole> role = new HashSet<>();
 
 }

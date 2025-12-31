@@ -1,51 +1,60 @@
 DO $body$
 DECLARE
-	admin_user_id UUID;
-	role_admin_id INT;
+	user_admin_id UUID;
+	role_admin_id UUID;
 BEGIN
 	CREATE TABLE users
 	(
-		id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+		id UUID NOT NULL DEFAULT gen_random_uuid(),
 		login CHARACTER VARYING(100) NOT NULL,
 		email CHARACTER VARYING(100) NOT NULL,
 		password character varying(300) NOT NULL,
-		role character varying(60) NOT NULL,
 		creation TIMESTAMP WITH TIME ZONE NOT NULL,
 		modified TIMESTAMP WITH TIME ZONE,
 		expires TIMESTAMP WITH TIME ZONE,
+		CONSTRAINT user_pk primary key (id),
 		CONSTRAINT user_login_unique UNIQUE (login),
-		CONSTRAINT user_email_unique UNIQUE (email)--,
-		--CONSTRAINT password_length_check CHECK (char_length(password::text) = 60)
+		CONSTRAINT user_email_unique UNIQUE (email),
+		CONSTRAINT password_length_check CHECK (char_length(password::text) <= 120)
 	);
 	
-	--CREATE TABLE "roles" (
-	--	id SERIAL PRIMARY KEY,
-	--	name CHARACTER VARYING(50) NOT NULL,
-	--	description CHARACTER VARYING(200),
-	--	creation TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-	--	modified TIMESTAMP WITH TIME ZONE
-	--);
+	CREATE TABLE "roles" (
+		id UUID NOT NULL DEFAULT gen_random_uuid(),
+		code CHARACTER VARYING(50) NOT NULL,
+		description CHARACTER VARYING(200),
+		creation TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+		modified TIMESTAMP WITH TIME ZONE,
+		expires TIMESTAMP WITH TIME ZONE,
+		CONSTRAINT role_pk primary key (id)
+		
+	);
 	
-	--CREATE TABLE "user_role" (
-	--	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-	--	user_id UUID NOT NULL,
-	--	role_id INT NOT NULL,
-	--	creation TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-	--	modified TIMESTAMP WITH TIME ZONE,
-	--	CONSTRAINT user_role_user_fk FOREIGN KEY (user_id) REFERENCES "users" (id),
-	--	CONSTRAINT user_role_role_fk FOREIGN KEY (role_id) REFERENCES "roles" (id)
-	--);
+	CREATE TABLE "user_roles" (
+		id UUID NOT NULL DEFAULT gen_random_uuid(),
+		user_id UUID NOT NULL,
+		role_id UUID NOT NULL,
+		creation TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+		modified TIMESTAMP WITH TIME ZONE,
+		expires TIMESTAMP WITH TIME ZONE,
+		CONSTRAINT user_role_pk primary key (id),
+		CONSTRAINT user_role_user_fk FOREIGN KEY (user_id) REFERENCES "users"(id),
+		CONSTRAINT user_role_role_fk FOREIGN KEY (role_id) REFERENCES "roles"(id)
+	);
 	
-	admin_user_id := gen_random_uuid();
-	INSERT INTO users (id, login, email, creation, password, role)--user: admin, pass: admin
-	VALUES(admin_user_id, 'admin', 'admin@metube.com', NOW(), '{bcrypt}$2a$12$X4flUx.23h1/GDdk1BvsqONeX3p0QatdMASCz0AB1gSzkOl50zD4G', 'ROLE_ADMIN');
+	--Users
+	user_admin_id := gen_random_uuid();
+	INSERT INTO users (id, login, email, creation, password)--user: admin, pass: admin
+	VALUES(user_admin_id, 'admin', 'admin@metube.com', NOW(), '{bcrypt}$2a$12$X4flUx.23h1/GDdk1BvsqONeX3p0QatdMASCz0AB1gSzkOl50zD4G');
+	--Roles
+	role_admin_id := gen_random_uuid();
+	INSERT INTO roles (id, code, description)
+	VALUES(role_admin_id, 'ROLE_ADMIN', 'Admin role for user.');
 	
-	--role_admin_id := 1;
-	--INSERT INTO roles (id, name, description)
-	--VALUES(role_admin_id, 'ROLE_ADMIN', 'Admin role for user.');
-	
-	--INSERT INTO user_role (user_id, role_id )
-	--VALUES(admin_user_id, role_admin_id);
+	INSERT INTO roles (id, code, description)
+	VALUES(gen_random_uuid(), 'ROLE_USER', 'User role for user.');
+	--User-roles
+	INSERT INTO user_roles (user_id, role_id )
+	VALUES(user_admin_id, role_admin_id);
 	
 END
 $body$ language plpgsql;

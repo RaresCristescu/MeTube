@@ -1,5 +1,9 @@
 package com.app.server.service;
 
+import java.util.HashSet;
+import java.util.NoSuchElementException;
+import java.util.Set;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -7,19 +11,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.app.data.dto.UserDto;
+import com.app.data.entity.Role;
 import com.app.data.entity.User;
-import com.app.data.enums.Role;
+import com.app.data.entity.UserRole;
+import com.app.data.enums.RoleEnum;
+import com.app.data.repo.RoleRepo;
 import com.app.data.repo.UserRepo;
 
 @Service
 public class UserService {
 
-	private final UserRepo repo;
+	private final UserRepo userRepo;
+	private final RoleRepo roleEepo;
 	private final PasswordEncoder passwordEncoder;
 
-	public UserService(UserRepo repo, PasswordEncoder passwordEncoder) {
+	public UserService(UserRepo userRepo, RoleRepo roleEepo, PasswordEncoder passwordEncoder) {
 		super();
-		this.repo = repo;
+		this.userRepo = userRepo;
+		this.roleEepo = roleEepo;
 		this.passwordEncoder = passwordEncoder;
 	}
 
@@ -31,15 +40,22 @@ public class UserService {
 		try {
 			String hashPwd = passwordEncoder.encode(user.getPassword());
 
-			final User newUser = new User();
+			User newUser = new User();
 			newUser.setLogin(user.getLogin());
 			newUser.setEmail(user.getEmail());
 			newUser.setPassword(hashPwd);
-			newUser.setRole(Role.ROLE_ADMIN);
+			newUser = userRepo.save(newUser);
+			
+			Set<UserRole> userRoles = newUser.getRole();
+			Role r = roleEepo.findByCode(RoleEnum.ROLE_USER).orElseThrow(NoSuchElementException::new);
+			UserRole ur = new UserRole(newUser, r);
+			userRoles.add(ur);
 
-			User savedUser = repo.save(newUser);
-
-			if (savedUser.getId() != null) {
+			newUser.setRole(userRoles);
+			
+			userRepo.save(newUser);
+			
+			if (newUser.getId() != null) {
 				return ResponseEntity.status(HttpStatus.CREATED).body("Given user detail arte succesfully registered");
 			} else {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration failed");
