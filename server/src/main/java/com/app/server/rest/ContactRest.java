@@ -24,8 +24,7 @@ public class ContactRest {
 //	}
 
 	@GetMapping("/contact")
-	public String getUsers() {
-//		return userService.getUsers();
+	public String getContactInfo() {
 		return "INTRA AICI CA SA BLA BLA";
 	}
 

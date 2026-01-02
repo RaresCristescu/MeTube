@@ -32,7 +32,7 @@ const Login = () => {
 
 
         try {
-            await HttpClient.post("/user/register", {
+            await HttpClient.post("/user/login", {
             login:user,
             password:pwd,
             });

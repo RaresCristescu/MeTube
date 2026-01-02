@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.data.dto.UserDetailsDto;
 import com.app.data.dto.UserDto;
 import com.app.data.entity.User;
 import com.app.server.service.UserService;
@@ -28,27 +29,9 @@ public class UserRest {
 		this.userService = userService;
 	}
 
-	@GetMapping("/users")
-	public List<User> getUsers() {
-//		return userService.getUsers();
-		return null;
-	}
-
-	@GetMapping("/myAccount")
-	public ResponseEntity<String> getAccountDetails() {
-		return userService.getAccountDetails();
-	}
-
-	@GetMapping("/users/{id}")
-	public User getUser(@PathVariable("Id") UUID id) {
-//		return userService.getUser(id);
-		return null;
-	}
-
-	@PutMapping("/users/{id}")
-	public User updateUser(@RequestBody User user, @PathVariable("Id") UUID id) {
-//		return userService.updateUser(user, id);
-		return null;
+	@GetMapping("/myAccountInfo/{id}")
+	public UserDetailsDto getAccountDetails(@PathVariable final UUID id) {
+		return userService.getAccountDetails(id);
 	}
 
 	@PostMapping("/register")
@@ -56,7 +39,15 @@ public class UserRest {
 		try {
 			return userService.registerUser(userDto);
 		} catch (Exception e) {
-//			throw e;
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
+	}
+
+	@PostMapping("/login")
+	public ResponseEntity<String> login(@RequestBody UserDto userDto) {
+		try {
+			return userService.registerUser(userDto);
+		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}

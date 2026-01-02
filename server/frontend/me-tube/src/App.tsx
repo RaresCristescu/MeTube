@@ -7,7 +7,7 @@ function App() {
   return (
     <main className="App">
       <Register />
-      <Login />
+      {/* <Login /> */}
     </main>
   );
 }
