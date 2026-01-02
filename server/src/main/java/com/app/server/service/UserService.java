@@ -1,6 +1,5 @@
 package com.app.server.service;
 
-import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -33,7 +32,7 @@ public class UserService {
 	}
 
 	public ResponseEntity<String> getAccountDetails() {
-		return null;
+		return ResponseEntity.status(HttpStatus.CREATED).body("Astea sunt detalile cntuln");
 	}
 
 	public ResponseEntity<String> registerUser(@RequestBody UserDto user) {
@@ -45,16 +44,16 @@ public class UserService {
 			newUser.setEmail(user.getEmail());
 			newUser.setPassword(hashPwd);
 			newUser = userRepo.save(newUser);
-			
+
 			Set<UserRole> userRoles = newUser.getRole();
 			Role r = roleEepo.findByCode(RoleEnum.ROLE_USER).orElseThrow(NoSuchElementException::new);
 			UserRole ur = new UserRole(newUser, r);
 			userRoles.add(ur);
 
 			newUser.setRole(userRoles);
-			
+
 			userRepo.save(newUser);
-			
+
 			if (newUser.getId() != null) {
 				return ResponseEntity.status(HttpStatus.CREATED).body("Given user detail arte succesfully registered");
 			} else {

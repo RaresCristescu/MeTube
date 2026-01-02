@@ -45,9 +45,10 @@
 				</includes>
 			</resource>
 			 <resource>
-			    <directory>src/main/resources</directory>
+			    <directory>${basedir}/src/main/resources</directory>
 			    <includes>
 			      <include>**/*.sql</include>
+			      <include>**/*.p12</include>
 			    </includes>
   			</resource>
 		</resources>

@@ -2,10 +2,8 @@ import { useRef, useState, useEffect, MutableRefObject } from "react";
 import HttpClient from "./lib/HttpClient.tsx";
 
 
-const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
-const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 
-const Register = () => {
+const Login = () => {
     const userRef = useRef<any>();
     const errRef = useRef<any>();
 
@@ -13,16 +11,10 @@ const Register = () => {
     const [validName, setValidName] = useState(false);
     const [userFocus, setUserFocus] = useState(false);
 
-    const [email, setEmail] = useState('');
-    const [emailFocus, setEmailFocus] = useState(false);
 
     const [pwd, setPwd] = useState('');
     const [validPwd, setValidPwd] = useState(false);
     const [pwdFocus, setPwdFocus] = useState(false);
-
-    const [matchPwd, setMatchPwd] = useState('');
-    const [validMatch, setValidMatch] = useState(false);
-    const [matchFocus, setMatchFocus] = useState(false);
 
     const [errMsg, setErrMsg] = useState('');
     const [success, setSuccess] = useState(false);
@@ -32,47 +24,20 @@ const Register = () => {
     }, [])
 
     useEffect(() => {
-        const result = USER_REGEX.test(user);
-        console.log(result);
-        console.log(user);
-        setValidName(result);
-    }, [user])
-
-    useEffect(() => {
-        const result = PWD_REGEX.test(pwd);
-        console.log(result);
-        console.log(pwd);
-        setValidPwd(result);
-        const match = pwd === matchPwd;
-        setValidMatch(match);
-    }, [pwd, matchPwd])
-
-    useEffect(() => {
         setErrMsg('');
-    }, [user, pwd, matchPwd])
-
-
+    }, [user, pwd])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        //if button enabled with js hack
-        const v1 = USER_REGEX.test(user);
-        const v2 = PWD_REGEX.test(pwd);
-        if(!v1 || !v2){
-            setErrMsg("Invalid Entry");
-            return;
-        }
 
         try {
             await HttpClient.post("/user/register", {
             login:user,
             password:pwd,
-            email:email
             });
 
             alert("User registered successfully!");
-            console.log(user, pwd, email);
             setSuccess(true);
         } catch (error) {
             console.error(error);
@@ -193,4 +158,4 @@ const Register = () => {
     )
 }
 
-export default Register
+export default Login
