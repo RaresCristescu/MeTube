@@ -33,47 +33,59 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import com.app.server.exceptionhandling.CustomAccessDeniedHandler;
+import com.app.server.exceptionhandling.CustomBasicAuthenticationEntryPoint;
+
 @Configuration
 //@EnableWebSecurity
 public class SecurityConfig {
 
 	@Bean
 	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-		// daca nu adaugi requiresChannel atunci o sa accepte si http si https
-//		http.requiresChannel(rcc-> rcc.anyRequest().requiresSecure());//obliga https
-		http.requiresChannel(rcc -> rcc.anyRequest().requiresInsecure());// obliga http
-
-		http.csrf(csrfConfig -> csrfConfig.disable());
-		http.authorizeHttpRequests((requests) -> requests
-				.requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-resources", "/swagger-resources/**",
-						"/configuration/ui", "/configuration/security", "/swagger-ui/**", "/webjars/**",
-						"/swagger-ui.html", "/ws/**")
-				.permitAll().requestMatchers("/contact", "/error", "/api/user/register").permitAll()
-				.requestMatchers("/api/**").authenticated());
-//		http.formLogin(flc -> {
-//			flc.disable();//daca sunt ambele disbled imi pica
-//		});
-//		http.httpBasic(hbc -> {
-//			hbc.disable();//daca sunt abmele disalbed imi pica
-//		});
+		http.sessionManagement(smc -> smc//.sessionFixation(sfc -> sfc.newSession())
+				.invalidSessionUrl("/invalidSession").maximumSessions(1).maxSessionsPreventsLogin(true))
+			.requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())//requiresSecure
+			.csrf(csrfConfig -> csrfConfig.disable())
+			.authorizeHttpRequests((requests) -> requests
+			.requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
+								"/swagger-resources/**", "/configuration/ui", "/configuration/security",
+								"/swagger-ui/**", "/webjars/**", "/swagger-ui.html", "/ws/**").permitAll()
+			.requestMatchers("/contact", "/error", "/api/user/register", "/invalidSession").permitAll()
+			.requestMatchers("/api/**").authenticated());
 		http.formLogin(withDefaults());
-		http.httpBasic(withDefaults());
+		http.httpBasic(hbc -> hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
+		http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
+//		http.exceptionHandling(ehc -> ehc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));// asta e
+		// globala
+		// //GLobal
+		// config
 		return http.build();
-	}
 
-//	@Bean //mai am un bean MyUserDetailsService.java
-//	public UserDetailsService userDetailsService(DataSource dataSource) {
-//		return new JdbcUserDetailsManager(dataSource);
-//	}
+//		
+//		// daca nu adaugi requiresChannel atunci o sa accepte si http si https
+////		http.requiresChannel(rcc-> rcc.anyRequest().requiresSecure());//obliga https
+//		http.requiresChannel(rcc -> rcc.anyRequest().requiresInsecure());// obliga http
+//
+//		http.csrf(csrfConfig -> csrfConfig.disable());
+//		http.authorizeHttpRequests((requests) -> requests
+//				.requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-resources", "/swagger-resources/**",
+//						"/configuration/ui", "/configuration/security", "/swagger-ui/**", "/webjars/**",
+//						"/swagger-ui.html", "/ws/**")
+//				.permitAll().requestMatchers("/contact", "/error", "/api/user/register").permitAll()
+//				.requestMatchers("/api/**").authenticated());
+//		http.formLogin(withDefaults());
+//		http.httpBasic(hbc -> hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
+//		http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
+////		http.exceptionHandling(ehc -> ehc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));// asta e
+//																												// globala
+//																												// //GLobal
+//																												// config
+//		return http.build();
+	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
-
-//	@Bean //Comentat ca nu ma lasa cu parolele mele puse la misto gen 123 si admin
-//	public CompromisedPasswordChecker compromisedPasswordChecker() {
-//		return new HaveIBeenPwnedRestApiPasswordChecker();//verifica pe un api real de pe internet sa vada daca e ok parola
-//	}
 
 }

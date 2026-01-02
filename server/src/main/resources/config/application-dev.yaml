@@ -14,10 +14,24 @@ spring:
         user:
             name: ${SECURITY_USERNAME:user}
             password: ${SECURITY_PASSWORD:123}
+
+#Config for HTTPS ssl authentication
+server:
+#    port: 8443
+#    ssl:
+#        enabled: true
+#        key-store: classpath:keystore.p12
+#        key-store-password: 12345678
+#        key-store-type: PKCS12
+#        key-alias: tomcat
+    servlet:
+        session:
+            timeout: ${SESSION_TIMEOUT:20m}
+
 logging:
     level:
         org:
             springframework:
                 security: ${SPRING_SECURITY_LOG_LEVEL:TRACE}
     pattern:
-        console: '${LOGPATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n}'
+        console: '${LOGPATTERN_CONSOLE:%green(%d{dd/MM/yyyy HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n}'
