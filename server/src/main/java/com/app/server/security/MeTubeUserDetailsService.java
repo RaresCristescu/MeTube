@@ -3,6 +3,7 @@ package com.app.server.security;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,15 +25,15 @@ public class MeTubeUserDetailsService implements UserDetailsService {
 	public MeTubeUserDetailsService(UserRepo userRepo) {
 		this.userRepo = userRepo;
 	}
-	
-	@Transactional//TODO find a better alternative
+
+	@Transactional // TODO find a better alternative
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userRepo.findByLogin(username)
 				.orElseThrow(() -> new UsernameNotFoundException("User details not found for the user: " + username));
 
-		List<GrantedAuthority> authorities = List
-				.of(new SimpleGrantedAuthority(user.getRole().iterator().next().getRole().getCode().name()));
+		List<GrantedAuthority> authorities = user.getRole().stream()
+				.map(r -> new SimpleGrantedAuthority(r.getRole().getCode().name())).collect(Collectors.toList());
 
 		return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(), authorities);
 	}

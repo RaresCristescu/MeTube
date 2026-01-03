@@ -80,7 +80,9 @@ public class SecurityConfig {
 								"/swagger-resources/**", "/configuration/ui", "/configuration/security",
 								"/swagger-ui/**", "/webjars/**", "/swagger-ui.html", "/ws/**").permitAll()
 			.requestMatchers("/contact", "/error", "/api/user/register", "/invalidSession").permitAll()
-			.requestMatchers("/api/**").authenticated());
+			.requestMatchers("/api/**").authenticated()
+			.requestMatchers("/api/**").hasRole("ADMIN")
+			.requestMatchers("/api/**").hasAnyRole("ADMIN","USER"));
 		http.formLogin(withDefaults());
 		http.httpBasic(hbc -> hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
 		http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
