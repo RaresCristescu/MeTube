@@ -24,13 +24,13 @@ public interface SessionKeyRepo extends JpaRepository<SessionKey, UUID>, JpaSpec
 	SessionKey findByIdWithUserRolesAndRoles(UUID id);
 	
 	@Query("select s.user from SessionKey s where s.id = :id")
-	Optional<User> findUserBySessId(String id);
+	Optional<User> findUserBySessId(UUID id);
 	
 	@Query("select s.user.id from SessionKey s where s.id = :id")
-	Optional<UUID> findUserIdBySessId(String id);
+	Optional<UUID> findUserIdBySessId(UUID id);
 	
 	@Query("select s.user.login from SessionKey s where s.id = :id")
-	Optional<String> findUserLoginBySessId(String id);
+	Optional<String> findUserLoginBySessId(UUID id);
 	
 	@Modifying
 	@Query("delete from SessionKey s where s.expires <= current_timestamp")

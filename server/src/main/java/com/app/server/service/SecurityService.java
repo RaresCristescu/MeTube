@@ -6,6 +6,8 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -81,9 +83,44 @@ public class SecurityService {
 		}
 	}
 	
+	public Boolean hasRole(RoleEnum role) {
+		return hasRole(List.of(role).stream());
+	}
+	
+	public Boolean hasRole(Stream<RoleEnum> roles) {
+		return getCurrentUser()
+				.map(user -> user.getRole()
+						.stream().map(ur -> ur.getRole().getCode()).collect(Collectors.toList()))
+				.map(userRoles -> roles.filter(r -> userRoles.contains(r))
+						.findFirst()
+						.isPresent())
+				.orElseGet(() -> false);
+	}
+
+	
+	public UUID getCurrentUserId(){
+		Optional<User> user =  getCurrentUser();
+		if (user.isPresent()) {
+			return user.get().getId();
+		} else {
+			log.error("Unidentifeid session.");
+			throw new RuntimeException("Unidentifeid session.");
+		}
+	}
+	
+	public Optional<User> getCurrentUser(){
+		UUID sessionId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return sessionRepo.findUserBySessId(sessionId);
+	}
+	
 	@Scheduled(fixedRate = 5000)
 	public void deleteExpiredSessions() {
 		sessionRepo.deleteExpiredSessions();
+	}
+	
+	public void logout() {
+		UUID sessionId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		sessionRepo.deleteById(sessionId);
 	}
 	
 	public SessionKey getSessionKeyById(final UUID id){

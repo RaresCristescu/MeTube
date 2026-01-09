@@ -61,17 +61,16 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter{
 	                throw new BadCredentialsException("Invalid or revoked session");
 	            }
 
-	            User user = sessionKey.getUser();
-
 	            JwtUtils.validateToken(token, sessionKey.getPublicKey());
 	            
-	            String[] roles = user.getRole().stream()
+	            
+	            String[] roles = sessionKey.getUser().getRole().stream()
 	                    .map(r -> r.getRole().getCode().name())
 	                    .toArray(String[]::new);
 
 	            UsernamePasswordAuthenticationToken authentication =
 	                    new UsernamePasswordAuthenticationToken(
-	                            user,
+	                    		sessionKey.getId(),
 	                            null,
 	                            AuthorityUtils.createAuthorityList(roles)
 	                    );
