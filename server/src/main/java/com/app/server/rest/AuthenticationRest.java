@@ -17,10 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.app.data.dto.JwtResponse;
 import com.app.data.dto.UserAuthenticationDto;
 import com.app.data.dto.UserDetailsDto;
-import com.app.data.dto.UserDto;
 import com.app.data.entity.User;
 import com.app.security.service.JwtService;
 import com.app.server.service.UserService;
@@ -39,7 +37,7 @@ public class AuthenticationRest {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserAuthenticationDto request) {
+    public String login(@RequestBody UserAuthenticationDto request) {
 
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
@@ -50,6 +48,6 @@ public class AuthenticationRest {
 
         String token = jwtService.generateToken(authentication);
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        return token;
     }
 }

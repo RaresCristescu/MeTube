@@ -43,13 +43,4 @@ public class UserRest {
 		}
 	}
 
-	@PostMapping("/login")
-	public ResponseEntity<String> login(@RequestBody UserDto userDto) {
-		try {
-			return userService.registerUser(userDto);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-		}
-	}
-
 }

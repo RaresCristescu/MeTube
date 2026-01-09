@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.app.data.dto.MessageDto;
 import com.app.data.dto.UserDetailsDto;
-import com.app.data.dto.UserDto;
 import com.app.data.entity.User;
 import com.app.server.service.MessageService;
 import com.app.server.service.UserService;

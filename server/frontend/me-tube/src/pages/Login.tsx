@@ -1,10 +1,12 @@
 import { useRef, useState, useEffect } from "react";
 import HttpClient from "../lib/HttpClient.tsx";
+import { useNavigate } from "react-router-dom";
 
 
 
 const Login = () => {
     const userRef = useRef<any>();
+    const navigate = useNavigate();
 
     const [user, setUser] = useState('');
 
@@ -26,12 +28,13 @@ const Login = () => {
             login:user,
             password:pwd,
             }).then(res => {
-                console.log(res.data.token);
+                console.log(res.data);
                 // localStorage.setItem("token", res.data.token);
-                 const token = res.data.token;
+                 const token = res.data;
 
                 // Store JWT in a cookie
                 document.cookie = `token=${token}; path=/; Secure; SameSite=Strict`;
+                navigate("/messages");
             });
 
         } catch (error) {
