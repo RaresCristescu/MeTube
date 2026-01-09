@@ -33,6 +33,9 @@ public class User extends CommonEntity {
 	@Column(name = "password")
 	private String password;
 
+	@Column(name = "disabled")
+	private Boolean disabled;
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
 	private Set<UserRole> role = new HashSet<>();
 

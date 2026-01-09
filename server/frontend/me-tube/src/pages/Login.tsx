@@ -25,7 +25,7 @@ const Login = () => {
 
         try {
             await HttpClient.post("/auth/login", {
-            login:user,
+            username:user,
             password:pwd,
             }).then(res => {
                 console.log(res.data);
@@ -33,7 +33,7 @@ const Login = () => {
                  const token = res.data;
 
                 // Store JWT in a cookie
-                document.cookie = `token=${token}; path=/; Secure; SameSite=Strict`;
+                document.cookie = `token=${token}; path=/; Secure; SameSite=Strict; max-age=3600`;
                 navigate("/messages");
             });
 

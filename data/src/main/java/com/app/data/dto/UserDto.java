@@ -1,5 +1,7 @@
 package com.app.data.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,4 +13,5 @@ public class UserDto {
 	private String login;
 	private String email;
 	private String password;
+	private List<String> roles;
 }

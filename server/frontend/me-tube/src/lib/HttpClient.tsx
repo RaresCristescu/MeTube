@@ -24,7 +24,7 @@ api.interceptors.request.use((config) => {
   if (token) {
     // Type assertion to satisfy Axios v1 typing
     if (!config.headers) config.headers = {} as any;
-    (config.headers as any)["Authorization"] = `Bearer ${token}`;
+    (config.headers as any)["Authorization"] = `${token}`;
   }
   return config;
 });

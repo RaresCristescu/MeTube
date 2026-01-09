@@ -2,27 +2,14 @@ package com.app.server.service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.app.data.dto.MessageDto;
-import com.app.data.dto.UserDetailsDto;
-import com.app.data.dto.UserDto;
 import com.app.data.entity.Message;
-import com.app.data.entity.Role;
-import com.app.data.entity.User;
-import com.app.data.entity.UserRole;
-import com.app.data.enums.RoleEnum;
 import com.app.data.repo.MessageRepo;
-import com.app.data.repo.RoleRepo;
-import com.app.data.repo.UserRepo;
 
 @Service
 public class MessageService {

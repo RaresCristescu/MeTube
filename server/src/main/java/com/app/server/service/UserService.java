@@ -1,12 +1,11 @@
 package com.app.server.service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -18,19 +17,20 @@ import com.app.data.entity.UserRole;
 import com.app.data.enums.RoleEnum;
 import com.app.data.repo.RoleRepo;
 import com.app.data.repo.UserRepo;
+import com.app.security.utils.PasswordUtils;
 
 @Service
 public class UserService {
 
 	private final UserRepo userRepo;
 	private final RoleRepo roleEepo;
-	private final PasswordEncoder passwordEncoder;
+	
+	private final SecurityService securityService;
 
-	public UserService(UserRepo userRepo, RoleRepo roleEepo, PasswordEncoder passwordEncoder) {
-		super();
+	public UserService(UserRepo userRepo, RoleRepo roleEepo, SecurityService securityService) {
 		this.userRepo = userRepo;
 		this.roleEepo = roleEepo;
-		this.passwordEncoder = passwordEncoder;
+		this.securityService = securityService;
 	}
 
 	public UserDetailsDto getAccountDetails(final UUID id) {
@@ -40,32 +40,23 @@ public class UserService {
 		return ud;
 	}
 
-	public ResponseEntity<String> registerUser(@RequestBody UserDto user) {
-		try {
-			String hashPwd = passwordEncoder.encode(user.getPassword());
+	public void registerUser(UserDto userDto) {
+		String hashPwd = PasswordUtils.encode(userDto.getPassword());
 
-			User newUser = new User();
-			newUser.setLogin(user.getLogin());
-			newUser.setEmail(user.getEmail());
-			newUser.setPassword(hashPwd);
-			newUser = userRepo.save(newUser);
+		User newUser = new User();
+		newUser.setLogin(userDto.getLogin());
+		newUser.setEmail(userDto.getEmail());
+		newUser.setPassword(hashPwd);
+		newUser.setDisabled(false);
+		final User dbUser = userRepo.save(newUser);
 
-			Set<UserRole> userRoles = newUser.getRole();
-			Role r = roleEepo.findByCode(RoleEnum.ROLE_USER).orElseThrow(NoSuchElementException::new);
-			UserRole ur = new UserRole(newUser, r);
-			userRoles.add(ur);
+		Set<UserRole> userRoles = dbUser.getRole();
+		List<Role> rList = roleEepo.findByCodes(userDto.getRoles()!=null && !userDto.getRoles().isEmpty()//TODO remove thius check after UI sends the roles
+				? userDto.getRoles().stream().map(rDto -> RoleEnum.valueOf(rDto)).collect(Collectors.toList())
+				: List.of(RoleEnum.ROLE_USER));
+		rList.forEach(r -> userRoles.add(new UserRole(dbUser, r)));
+		dbUser.setRole(userRoles);
 
-			newUser.setRole(userRoles);
-
-			userRepo.save(newUser);
-
-			if (newUser.getId() != null) {
-				return ResponseEntity.status(HttpStatus.CREATED).body("Given user detail arte succesfully registered");
-			} else {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration failed");
-			}
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-		}
+		userRepo.save(dbUser);
 	}
 }

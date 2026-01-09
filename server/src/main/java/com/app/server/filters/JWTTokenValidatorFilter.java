@@ -1,25 +1,22 @@
 package com.app.server.filters;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
+import java.util.UUID;
 
-import javax.crypto.SecretKey;
-
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.app.security.service.JwtService;
+import com.app.data.entity.SessionKey;
+import com.app.data.entity.User;
+import com.app.security.utils.JwtUtils;
 import com.app.server.constants.AppConstants;
+import com.app.server.service.SecurityService;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,31 +25,73 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JWTTokenValidatorFilter extends OncePerRequestFilter{
 	
-	private final JwtService jwtService;
-	
-	public JWTTokenValidatorFilter(JwtService jwtService) {
-		this.jwtService = jwtService;
-	}
+	  private final SecurityService securityService; 
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-		String header = request.getHeader(AppConstants.JWT_HEADER);
-		if(header != null && header.startsWith("Bearer ")) {
-			try {
-				String jwt = header.substring(7);
-				Authentication authentication = jwtService.validateToken(jwt);
-				SecurityContextHolder.getContext().setAuthentication(authentication);
-			}catch(Exception e) {
-				throw new BadCredentialsException("Invalid token received!");
-			}
-		}
-		filterChain.doFilter(request, response);
-	}
+	    public JWTTokenValidatorFilter(SecurityService securityService) {
+	        this.securityService = securityService;
+	    }
+	    
+	    @Override
+	    protected void doFilterInternal(
+	            HttpServletRequest request,
+	            HttpServletResponse response,
+	            FilterChain filterChain
+	    ) throws ServletException, IOException {
+
+	        String header = request.getHeader(AppConstants.JWT_HEADER);
+
+	        if (header == null || !header.startsWith("user ")) {
+	            filterChain.doFilter(request, response);
+	            return;
+	        }
+
+	        try {
+	            String token = header.substring(5);
+
+	            String sessionId = JwtUtils.extractSessionIdUnverified(token);
+	            if (sessionId == null) {
+	                throw new BadCredentialsException("JWT missing session claim");
+	            }
+
+	            SessionKey sessionKey =
+	                    securityService.getSessionKeyById(UUID.fromString(sessionId));
+
+	            if (sessionKey == null || sessionKey.getExpires()==null || sessionKey.getExpires()
+	            		.isBefore(ZonedDateTime.now())) {
+	                throw new BadCredentialsException("Invalid or revoked session");
+	            }
+
+	            User user = sessionKey.getUser();
+
+	            JwtUtils.validateToken(token, sessionKey.getPublicKey());
+	            
+	            String[] roles = user.getRole().stream()
+	                    .map(r -> r.getRole().getCode().name())
+	                    .toArray(String[]::new);
+
+	            UsernamePasswordAuthenticationToken authentication =
+	                    new UsernamePasswordAuthenticationToken(
+	                            user,
+	                            null,
+	                            AuthorityUtils.createAuthorityList(roles)
+	                    );
+
+	            SecurityContextHolder.getContext()
+	                    .setAuthentication(authentication);
+
+	        } catch (Exception ex) {
+	            SecurityContextHolder.clearContext();
+	            throw new BadCredentialsException("Invalid JWT token", ex);
+	        }
+
+	        filterChain.doFilter(request, response);
+	    }
+
 	
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-		return request.getServletPath().equals("/api/user/login");
+		 return request.getServletPath().equals("/api/auth/login")
+	                || request.getServletPath().equals("/api/user/register");
 	}
 
 }

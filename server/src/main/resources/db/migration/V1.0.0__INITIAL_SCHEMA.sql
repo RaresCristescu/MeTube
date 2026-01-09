@@ -9,6 +9,7 @@ BEGIN
 		login CHARACTER VARYING(100) NOT NULL,
 		email CHARACTER VARYING(100) NOT NULL,
 		password character varying(300) NOT NULL,
+		disabled BOOLEAN NOT NULL,
 		creation TIMESTAMP WITH TIME ZONE NOT NULL,
 		modified TIMESTAMP WITH TIME ZONE,
 		expires TIMESTAMP WITH TIME ZONE,
@@ -41,10 +42,21 @@ BEGIN
 		CONSTRAINT user_role_role_fk FOREIGN KEY (role_id) REFERENCES "roles"(id)
 	);
 	
+	CREATE TABLE "session_key" (
+		id UUID NOT NULL DEFAULT gen_random_uuid(),
+		user_id UUID NOT NULL,
+		public_key CHARACTER VARYING(255) NOT NULL,
+		creation TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+		modified TIMESTAMP WITH TIME ZONE,
+		expires TIMESTAMP WITH TIME ZONE,
+		CONSTRAINT session_key_pk primary key (id),
+		CONSTRAINT session_key_user_fk FOREIGN KEY (user_id) REFERENCES "users"(id)
+	);
+	
 	--Users
 	user_admin_id := gen_random_uuid();
-	INSERT INTO users (id, login, email, creation, password)--user: admin, pass: admin
-	VALUES(user_admin_id, 'admin', 'admin@metube.com', NOW(), '{bcrypt}$2a$12$X4flUx.23h1/GDdk1BvsqONeX3p0QatdMASCz0AB1gSzkOl50zD4G');
+	INSERT INTO users (id, login, email, disabled, creation, password)--user: admin, pass: admin
+	VALUES(user_admin_id, 'admin', 'admin@metube.com', false, NOW(), '{bcrypt}$2a$12$X4flUx.23h1/GDdk1BvsqONeX3p0QatdMASCz0AB1gSzkOl50zD4G');
 	--Roles
 	role_admin_id := gen_random_uuid();
 	INSERT INTO roles (id, code, description)

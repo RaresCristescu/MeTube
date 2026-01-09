@@ -1,7 +1,7 @@
 package com.app.data.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -24,32 +24,31 @@ public class CommonEntity implements Serializable {
 
 	@Column(name = "creation", columnDefinition = "TIMESTAMP WITH TIME ZONE")
 	@Temporal(TemporalType.TIMESTAMP)
-	protected Date creation;
+	protected ZonedDateTime creation;
 
 	@Column(name = "expires", nullable = true, columnDefinition = "TIMESTAMP WITH TIME ZONE")
 	@Temporal(TemporalType.TIMESTAMP)
-	protected Date expires;
+	protected ZonedDateTime expires;
 
 	@Column(name = "modified", nullable = true, columnDefinition = "TIMESTAMP WITH TIME ZONE")
 	@Temporal(TemporalType.TIMESTAMP)
-	protected Date modified;
+	protected ZonedDateTime modified;
 
 	@PrePersist
 	public void prePersist() {
 		if (this.creation == null) {
-			this.creation = new Date();
+			this.creation = ZonedDateTime.now();
 		}
 	}
 
 	@PreUpdate
 	public void preUpdate() {
 		if (this.modified == null) {
-			this.modified = new Date();
+			this.modified = ZonedDateTime.now();
 		}
 	}
 
-	public CommonEntity(UUID id, Date creation, Date expires, Date modified) {
-		super();
+	public CommonEntity(UUID id, ZonedDateTime creation, ZonedDateTime expires, ZonedDateTime modified) {
 		this.id = id;
 		this.creation = creation;
 		this.expires = expires;
@@ -57,8 +56,7 @@ public class CommonEntity implements Serializable {
 	}
 
 	public CommonEntity() {
-		super();
-		this.creation = new Date();
+		this.creation = ZonedDateTime.now();
 	}
 
 	public UUID getId() {
@@ -69,27 +67,27 @@ public class CommonEntity implements Serializable {
 		this.id = id;
 	}
 
-	public Date getCreation() {
+	public ZonedDateTime getCreation() {
 		return creation;
 	}
 
-	public void setCreation(Date creation) {
+	public void setCreation(ZonedDateTime creation) {
 		this.creation = creation;
 	}
 
-	public Date getExpires() {
+	public ZonedDateTime getExpires() {
 		return expires;
 	}
 
-	public void setExpires(Date expires) {
+	public void setExpires(ZonedDateTime expires) {
 		this.expires = expires;
 	}
 
-	public Date getModified() {
+	public ZonedDateTime getModified() {
 		return modified;
 	}
 
-	public void setModified(Date modified) {
+	public void setModified(ZonedDateTime modified) {
 		this.modified = modified;
 	}
 
