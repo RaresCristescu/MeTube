@@ -13,8 +13,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -29,6 +31,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -40,52 +43,56 @@ import org.springframework.web.filter.CorsFilter;
 
 import com.app.server.exceptionhandling.CustomAccessDeniedHandler;
 import com.app.server.exceptionhandling.CustomBasicAuthenticationEntryPoint;
-import com.app.server.filters.CsrfCookieFilter;
+import com.app.server.filters.JWTTokenValidatorFilter;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 @Configuration
 //@EnableWebSecurity
 public class SecurityConfig {
+	private final JWTTokenValidatorFilter jWTTokenValidatorFilter;
+
+	public SecurityConfig(JWTTokenValidatorFilter jWTTokenValidatorFilter) {
+		this.jWTTokenValidatorFilter = jWTTokenValidatorFilter;
+	}
 
 	@Bean
 	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-		CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
-		
+
+//	CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
+
 		http
 //		.sessionManagement(smc -> smc//.sessionFixation(sfc -> sfc.newSession())
 //				.invalidSessionUrl("/invalidSession").maximumSessions(1).maxSessionsPreventsLogin(true))
-		.securityContext(contextConfig->contextConfig.requireExplicitSave(false))
-		.sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
-		.requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())//requiresSecure
-			.cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() {
-				@Override
-				public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-					CorsConfiguration config = new CorsConfiguration();
-					config.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
-					config.setAllowedMethods(Collections.singletonList("*"));
-					config.setAllowCredentials(true);
-					config.setAllowedHeaders(Collections.singletonList("*"));
-					config.setMaxAge(3600L);
-					return config;
-				}
-			}))
-			.csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
-//					.ignoringRequestMatchers("/register")
-					.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-			.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-			//			.csrf(csrfConfig -> csrfConfig.disable())
-			.authorizeHttpRequests((requests) -> requests
-			.requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
+				.csrf(csrfConfig -> csrfConfig.disable())
+				.sessionManagement(
+						sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())// requiresSecure
+				.cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() {
+					@Override
+					public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+						CorsConfiguration config = new CorsConfiguration();
+						config.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+						config.setAllowedMethods(Collections.singletonList("*"));
+						config.setAllowCredentials(true);
+						config.setAllowedHeaders(Collections.singletonList("*"));
+						config.setExposedHeaders(Arrays.asList("Authorization"));
+						config.setMaxAge(3600L);
+						return config;
+					}
+				}))
+				.authorizeHttpRequests((requests) -> requests
+						.requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
 								"/swagger-resources/**", "/configuration/ui", "/configuration/security",
-								"/swagger-ui/**", "/webjars/**", "/swagger-ui.html", "/ws/**").permitAll()
-			.requestMatchers("/contact", "/error", "/api/user/register", "/invalidSession").permitAll()
-			.requestMatchers("/api/**").authenticated()
-			.requestMatchers("/api/**").hasRole("ADMIN")
-			.requestMatchers("/api/**").hasAnyRole("ADMIN","USER"));
-		http.formLogin(withDefaults());
-		http.httpBasic(hbc -> hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
-		http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
+								"/swagger-ui/**", "/webjars/**", "/swagger-ui.html", "/ws/**")
+						.permitAll().requestMatchers("/api/user/register", "/api/auth/login").permitAll()
+						.requestMatchers("/api/**").authenticated())
+				.addFilterBefore(jWTTokenValidatorFilter, UsernamePasswordAuthenticationFilter.class)
+		// .csrf(csrfConfig -> csrfConfig.disable())
+		;
+//		http.formLogin(withDefaults());
+//		http.httpBasic(hbc -> hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
+//		http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
 //		http.exceptionHandling(ehc -> ehc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));// asta e
 		// globala
 		// //GLobal
@@ -93,25 +100,57 @@ public class SecurityConfig {
 		return http.build();
 
 //		
-//		// daca nu adaugi requiresChannel atunci o sa accepte si http si https
-////		http.requiresChannel(rcc-> rcc.anyRequest().requiresSecure());//obliga https
-//		http.requiresChannel(rcc -> rcc.anyRequest().requiresInsecure());// obliga http
-//
-//		http.csrf(csrfConfig -> csrfConfig.disable());
-//		http.authorizeHttpRequests((requests) -> requests
-//				.requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-resources", "/swagger-resources/**",
-//						"/configuration/ui", "/configuration/security", "/swagger-ui/**", "/webjars/**",
-//						"/swagger-ui.html", "/ws/**")
-//				.permitAll().requestMatchers("/contact", "/error", "/api/user/register").permitAll()
-//				.requestMatchers("/api/**").authenticated());
+//		
+//		
+//		CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
+//		
+//		http
+////		.sessionManagement(smc -> smc//.sessionFixation(sfc -> sfc.newSession())
+////				.invalidSessionUrl("/invalidSession").maximumSessions(1).maxSessionsPreventsLogin(true))
+//		.sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//		.requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())//requiresSecure
+//			.cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() {
+//				@Override
+//				public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+//					CorsConfiguration config = new CorsConfiguration();
+//					config.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+//					config.setAllowedMethods(Collections.singletonList("*"));
+//					config.setAllowCredentials(true);
+//					config.setAllowedHeaders(Collections.singletonList("*"));
+//					config.setExposedHeaders(Arrays.asList("Authorization"));
+//					config.setMaxAge(3600L);
+//					return config;
+//				}
+//			}))
+//			.csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+////					.ignoringRequestMatchers("/register")
+//					.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+//			.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+//			.addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+//			.addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
+//			//			.csrf(csrfConfig -> csrfConfig.disable())
+//			.authorizeHttpRequests((requests) -> requests
+//			.requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
+//								"/swagger-resources/**", "/configuration/ui", "/configuration/security",
+//								"/swagger-ui/**", "/webjars/**", "/swagger-ui.html", "/ws/**").permitAll()
+//			.requestMatchers("/contact", "/error", "/api/user/register", "/invalidSession").permitAll()
+//			.requestMatchers("/api/**").authenticated()
+//			.requestMatchers("/api/**").hasRole("ADMIN")
+//			.requestMatchers("/api/**").hasAnyRole("ADMIN","USER"));
 //		http.formLogin(withDefaults());
 //		http.httpBasic(hbc -> hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
 //		http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
 ////		http.exceptionHandling(ehc -> ehc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));// asta e
-//																												// globala
-//																												// //GLobal
-//																												// config
+//		// globala
+//		// //GLobal
+//		// config
 //		return http.build();
+	}
+
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+			throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
 	}
 
 	@Bean

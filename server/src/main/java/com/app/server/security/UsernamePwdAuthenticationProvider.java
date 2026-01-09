@@ -26,7 +26,7 @@ public class UsernamePwdAuthenticationProvider implements AuthenticationProvider
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-		String username = authentication.getName();
+		String username = authentication.getCredentials().toString();
 		String password = authentication.getCredentials().toString();
 		UserDetails userDetails = meTubeUserDetailsService.loadUserByUsername(username);
 		if (passwordEncoder.matches(password, userDetails.getPassword())) {

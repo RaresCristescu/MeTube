@@ -69,32 +69,4 @@ public class UserService {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}
-	
-	public ResponseEntity<String> login(@RequestBody UserLoginDto user) {
-		try {
-			String hashPwd = passwordEncoder.encode(user.getPassword());
-
-			User newUser = new User();
-			newUser.setPassword(hashPwd);
-			newUser = userRepo.save(newUser);
-
-			Set<UserRole> userRoles = newUser.getRole();
-			Role r = roleEepo.findByCode(RoleEnum.ROLE_USER).orElseThrow(NoSuchElementException::new);
-			UserRole ur = new UserRole(newUser, r);
-			userRoles.add(ur);
-
-			newUser.setRole(userRoles);
-
-			userRepo.save(newUser);
-
-			if (newUser.getId() != null) {
-				return ResponseEntity.status(HttpStatus.CREATED).body("Given user detail arte succesfully registered");
-			} else {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration failed");
-			}
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-		}
-	}
-
 }

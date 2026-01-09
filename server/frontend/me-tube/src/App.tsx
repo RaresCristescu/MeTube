@@ -1,14 +1,20 @@
 import './App.css'
-import Register from './Register';
-import Login from './Login';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Register from './pages/Register';
+import Login from './pages/Login';
+import Message from './pages/Message';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
-function App() {
+const App: React.FC = () => {
   return (
-    <main className="App">
-      <Register />
-      {/* <Login /> */}
-    </main>
+   <Router>
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/messages" element={<Message />} />
+      <Route path="/register" element={<Register />} />
+    </Routes>
+   </Router>
   );
 }
 
