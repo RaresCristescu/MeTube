@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.app.data.dto.UserAuthenticationDto;
 import com.app.server.service.SecurityService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication", description = "Authentication APIs")
 public class AuthenticationRest {
 	private final SecurityService securityService;
 

@@ -48,10 +48,8 @@ public class SecurityConfig {
 				}
 			}))
 			.authorizeHttpRequests((requests) -> requests
-					.requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
-							"/swagger-resources/**", "/configuration/ui", "/configuration/security",
-							"/swagger-ui/**", "/webjars/**", "/swagger-ui.html", "/ws/**")
-					.permitAll().requestMatchers("/api/user/register", "/api/auth/login").permitAll()
+					.requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+					.requestMatchers("/api/user/register", "/api/auth/login").permitAll()
 					.requestMatchers("/api/**").authenticated())
 			.addFilterBefore(jWTTokenValidatorFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();

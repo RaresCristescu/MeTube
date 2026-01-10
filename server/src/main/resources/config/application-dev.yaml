@@ -8,7 +8,7 @@ spring:
         database-platform: org.hibernate.dialect.PostgreSQLDialect
         hibernate:
             ddl-auto: validate
-        show-sql: true
+        show-sql: false #true daca vrei sa vezi ce query da la baza de date
         database: postgresql
     security:
         user:

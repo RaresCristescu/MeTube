@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.app.data.entity.SessionKey;
-import com.app.data.entity.User;
 import com.app.security.utils.JwtUtils;
 import com.app.server.constants.AppConstants;
 import com.app.server.service.SecurityService;
@@ -90,7 +89,9 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter{
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 		 return request.getServletPath().equals("/api/auth/login")
-	                || request.getServletPath().equals("/api/user/register");
+	                || request.getServletPath().equals("/api/user/register")
+	                || request.getServletPath().startsWith("/swagger-ui/")
+	                || request.getServletPath().startsWith("/v3/api-docs");
 	}
 
 }
