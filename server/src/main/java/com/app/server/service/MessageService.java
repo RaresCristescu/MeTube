@@ -9,12 +9,16 @@ import org.springframework.stereotype.Service;
 
 import com.app.data.dto.MessageDto;
 import com.app.data.entity.Message;
+import com.app.data.mapper.MapperUtils;
+import com.app.data.mapper.MessageMapper;
+import com.app.data.mapper.ModelMapper;
 import com.app.data.repo.MessageRepo;
 
 @Service
 public class MessageService {
 
 	private final MessageRepo repo;
+	private final ModelMapper<Message, MessageDto> messageMapper = MapperUtils.getMapper(MessageMapper.class);
 
 	public MessageService(MessageRepo repo) {
 		this.repo = repo;
@@ -22,30 +26,29 @@ public class MessageService {
 	
 	public MessageDto getMessage(final UUID id) {
 		Message m = repo.findById(id).orElseThrow(NoSuchElementException::new);
-		MessageDto md = new MessageDto(m.getId(),m.getDescription());
+		MessageDto md = messageMapper.entityToDto(m);
 		return md;
 	}
 	
 	public List<MessageDto> getAllMessage() {
 		List<Message> mList = repo.findAll();
 		List<MessageDto> md = mList.stream()
-					.map(m -> new MessageDto(m.getId(),m.getDescription()))
+					.map(messageMapper::entityToDto)
 					.collect(Collectors.toList());
 		return md;
 	}
 	
 	public MessageDto createMessage(final MessageDto dto) {
-		Message m = new Message();
-		m.setDescription(dto.getDescription());		
+		Message m = messageMapper.dtoToEntity(dto);
 		m =repo.save(m);
-		return new MessageDto(m.getId(),m.getDescription());
+		return messageMapper.entityToDto(m);
 	}
 	
 	public MessageDto updateMessage(final MessageDto dto) {
 		Message m = repo.findById(dto.getId()).orElseThrow(NoSuchElementException::new);
 		m.setDescription(dto.getDescription());
 		m = repo.save(m);
-		return new MessageDto(m.getId(),m.getDescription());
+		return messageMapper.entityToDto(m);
 	}
 	
 	public void deleteMessage(final UUID id) {

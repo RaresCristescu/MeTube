@@ -1,12 +1,12 @@
 package com.app.data.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 public class UserAuthenticationDto {
 	private String username;
 	private String password;

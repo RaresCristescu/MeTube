@@ -3,12 +3,12 @@ package com.app.data.dto;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 public class UserDto {
 	private String login;
 	private String email;

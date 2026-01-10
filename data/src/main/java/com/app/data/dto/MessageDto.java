@@ -3,12 +3,12 @@ package com.app.data.dto;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 public class MessageDto {
 	private UUID id;
 	private String description;
