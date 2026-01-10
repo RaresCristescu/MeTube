@@ -1,6 +1,6 @@
 HELP.md
 target/
-!.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
@@ -31,23 +31,3 @@ build/
 
 ### VS Code ###
 .vscode/
-
-
-#Java/Spring ignore rules
-/target/
-/.idea/
-/.mvn/
-*.iml
-*.class
-*.log
-*.jar
-
-#Node.js/react ignore rules
-/frontend/node_modules/
-/frontend/build/
-/frontend/.env
-
-#Custom files not to include
-/server/frontend/me-tube/package-lock.json
-/.sdkmanrc
-
